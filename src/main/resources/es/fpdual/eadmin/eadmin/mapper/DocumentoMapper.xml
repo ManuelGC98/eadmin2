@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="es.fpdual.eadmin.eadmin.mapper.DocumentoMapper">
+	<insert id="insertarDocumento">
+		INSERT INTO Elemento
+		(codigo,nombre,fechaCreacion,fechaUltimaActualizacion,publico,tipo,estado)
+		VALUES
+		(#{documento.codigo},#{documento.nombre},#{documento.fechaCreacion},#{documento.fechaUltimaActualizacion},#{documento.publico},1,#{documento.estado.codigo})
+	</insert>
+
+	<update id="modificarDocumento">
+		update Elemento set
+		nombre = #{documento.nombre},
+		fechaCreacion = #{documento.fechaCreacion},
+		fechaUltimaActualizacion =
+		#{documento.fechaUltimaActualizacion},
+		publico = #{documento.publico},
+		estado = #{documento.estado.codigo}
+		where codigo = #{codigo}
+	</update>
+
+	<delete id="borrarDocumento">
+		delete from Elemento where codigo = #{codigo}
+	</delete>
+
+
+	<resultMap id="docResult" type="es.fpdual.eadmin.eadmin.modelo.Documento">
+		<constructor>
+			<idArg column="codigo" javaType="Integer" />
+			<arg column="nombre" javaType="String" />
+			<arg column="fechaCreacion" javaType="Date" />
+			<arg column="fechaUltimaActualizacion" javaType="Date" />
+			<arg column="publico" javaType="Boolean" />
+			<arg column="estado" javaType="es.fpdual.eadmin.eadmin.modelo.EstadoDocumento" />
+		</constructor>
+	</resultMap>
+
+	<select id="consultarDocumento" resultMap="docResult">
+		SELECT codigo, nombre,
+		fechaCreacion, fechaUltimaActualizacion, publico, estado FROM
+		Elemento
+		WHERE codigo = #{documento.codigo}
+	</select>
+</mapper>
