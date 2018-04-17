@@ -3,6 +3,7 @@ package es.fpdual.eadmin.eadmin.mapper;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,12 +16,13 @@ import es.fpdual.eadmin.eadmin.modelo.EstadoDocumento;
 @Transactional("eadminTransactionManager")
 public abstract class BaseDocumentoMapperTest {
 
-	private Documento documento;
+	private Documento documento, documento2;
 	private Documento documentoModificado;
 
 	@Before
 	public void inicializarCadaTest() {
 		documento = new Documento(1, "Documento 1", new Date(), new Date(), true, EstadoDocumento.ACTIVO);
+		documento2 = new Documento(2, "Documento 2", new Date(), new Date(), true, EstadoDocumento.ACTIVO);
 		documentoModificado = new Documento(1, "Documento Modificado", new Date(), new Date(), true,
 				EstadoDocumento.ACTIVO);
 	}
@@ -51,7 +53,15 @@ public abstract class BaseDocumentoMapperTest {
 	@Test
 	public void deberiaConsultarUnDocumento() throws Exception {
 		this.mapper.insertarDocumento(this.documento);
-		final int resultado = this.mapper.consultarDocumento(this.documento);
-		assertThat(resultado, is(1));
+		final List<Documento> resultado = this.mapper.consultarDocumento(1);
+		assertThat(resultado, hasSize(1));
+	}
+	
+	@Test
+	public void deberiaConsultarTodosLosDocumento() throws Exception {
+		this.mapper.insertarDocumento(this.documento);
+		this.mapper.insertarDocumento(this.documento2);
+		final List<Documento> resultado = this.mapper.consultarTodosLosDocumento();
+		assertThat(resultado, hasSize(2));
 	}
 }

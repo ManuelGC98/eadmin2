@@ -23,8 +23,25 @@
 		delete from Elemento where codigo = #{codigo}
 	</delete>
 
+	<select id="consultarDocumento" resultMap="docResultMap">
+		<include refid="baseSelectDocumento" />
+		and codigo = #{codigo}
+	</select>
 
-	<resultMap id="docResult" type="es.fpdual.eadmin.eadmin.modelo.Documento">
+	<select id="consultarTodosLosDocumento" resultMap="docResultMap">
+		<include refid="baseSelectDocumento" />
+	</select>
+
+	<sql id="baseSelectDocumento">
+		SELECT codigo, nombre,
+		fechaCreacion,
+		fechaUltimaActualizacion, publico,
+		estado FROM
+		Elemento
+		WHERE tipo = 1
+	</sql>
+
+	<resultMap id="docResultMap" type="es.fpdual.eadmin.eadmin.modelo.Documento">
 		<constructor>
 			<idArg column="codigo" javaType="Integer" />
 			<arg column="nombre" javaType="String" />
@@ -34,11 +51,4 @@
 			<arg column="estado" javaType="es.fpdual.eadmin.eadmin.modelo.EstadoDocumento" />
 		</constructor>
 	</resultMap>
-
-	<select id="consultarDocumento" resultMap="docResult">
-		SELECT codigo, nombre,
-		fechaCreacion, fechaUltimaActualizacion, publico, estado FROM
-		Elemento
-		WHERE codigo = #{documento.codigo}
-	</select>
 </mapper>
