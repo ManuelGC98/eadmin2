@@ -1,6 +1,5 @@
 package es.fpdual.eadmin.eadmin.controlador;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import java.util.ArrayList;

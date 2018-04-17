@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import es.fpdual.eadmin.eadmin.mapper.DocumentoMapper;
 import es.fpdual.eadmin.eadmin.modelo.Documento;
 import es.fpdual.eadmin.eadmin.repositorio.RepositorioDocumento;
 
@@ -50,18 +49,17 @@ public class RepositorioDocumentoImpl implements RepositorioDocumento {
 	int rowNumLista2 = 0;
 	int rowNum2;
 
+	DocumentoMapper mapper;
+
 	@Override
 	public void altaDocumento(Documento documento) {
-		Logger.info("Entrando en metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
-
-		if (documentos.contains(documento)) {
-			throw new IllegalArgumentException("El documento ya existe");
-		}
-
-		documentos.add(documento);
-		this.ExportaExcel(documento, "Alta.xls");
-		Logger.info(documento.toString() + " se ha creado correctamente");
-		Logger.info("Saliendo de metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
+		// 1. obtener el max +1 de la base de datos
+		int codigo = mapper.obtenerSiguienteIdentificador();
+		// 2. modificar el objeto documento que me pasan por parámetro para enchufarle
+		// el codigo calculado
+		
+		// 3. insertar el documento con este nuevo codigo
+		mapper.insertarDocumento(documento);
 	}
 
 	@Override
@@ -89,14 +87,8 @@ public class RepositorioDocumentoImpl implements RepositorioDocumento {
 	}
 
 	@Override
-	public void modificarDocumento(Documento documento, Documento documentoNuevo) {
-		Logger.info("Entrando en metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
-		if (!documentos.contains(documento)) {
-			throw new IllegalArgumentException("El documento a modificar no existe");
-		}
-
-		documentos.set(documentos.indexOf(documento), documentoNuevo);
-		Logger.info("Saliendo de metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
+	public void modificarDocumento(Documento documentoModificado, Integer codigo) {
+		mapper.modificarDocumento(documentoModificado, codigo);
 	}
 
 	@Override
@@ -123,16 +115,7 @@ public class RepositorioDocumentoImpl implements RepositorioDocumento {
 
 	@Override
 	public void eliminarDocumento(Integer codigo) {
-		Logger.info("Entrando en metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
-		final Documento documentoAEliminar = this.obtenerDocumentoPorCodigo(codigo);
-		Logger.info("Eliminando " + documentoAEliminar.toString());
-
-		if (Objects.nonNull(documentoAEliminar)) {
-			documentos.remove(documentoAEliminar);
-		}
-
-		Logger.info(documentoAEliminar.toString() + " se ha eliminado");
-		Logger.info("Saliendo de metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
+		mapper.borrarDocumento(codigo);
 	}
 
 	@Override
@@ -162,35 +145,15 @@ public class RepositorioDocumentoImpl implements RepositorioDocumento {
 
 	@Override
 	public Documento obtenerDocumentoPorCodigo(Integer codigo) {
-		Logger.info("Entrando en metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
-		Logger.info("Buscando documento con codigo " + codigo);
-		Optional<Documento> documentoEncontrado = documentos.stream().filter(d -> tieneIgualCodigo(d, codigo))
-				.findFirst();
-
-		if (documentoEncontrado.isPresent()) {
-			Logger.info("Documento con codigo " + codigo + " encontrado. ");
-			documentoEncontrado.get().getDatos();
-			Logger.info("Saliendo de metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
-			return documentoEncontrado.get();
-		}
-		Logger.info("Saliendo de metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
-		return null;
+		return mapper.consultarDocumento(codigo);
 	}
 
 	@Override
 	public List<Documento> obtenerTodosLosDocumentos() {
-		Logger.info("Entrando en metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
-		for (Documento doc : documentos) {
-			Logger.info("************************");
-			Logger.info(this.getDatos(doc));
-			Logger.info("************************");
-		}
-		Logger.info("Saliendo de metodo " + Thread.currentThread().getStackTrace()[1].getMethodName());
-		return this.documentos;
+		return mapper.consultarTodosLosDocumento();
 	}
 
 	protected boolean tieneIgualCodigo(Documento documento, Integer codigo) {
-
 		return documento.getCodigo().equals(codigo);
 	}
 

@@ -10,11 +10,13 @@ public interface DocumentoMapper {
 
 	int insertarDocumento(@Param("documento") Documento documento);
 
-	int modificarDocumento(@Param("documento") Documento documento, @Param("codigo") Integer codigo);
+	int modificarDocumento(@Param("documento") Documento documentoModificado, @Param("codigo") Integer codigo);
 
 	int borrarDocumento(@Param("codigo") Integer codigo);
 
-	List<Documento> consultarDocumento(@Param("codigo") Integer codigo);
+	Documento consultarDocumento(@Param("codigo") Integer codigo);
 
 	List<Documento> consultarTodosLosDocumento();
+	
+	int obtenerSiguienteIdentificador();
 }

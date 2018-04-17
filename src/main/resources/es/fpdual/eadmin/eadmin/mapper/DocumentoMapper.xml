@@ -51,4 +51,8 @@
 			<arg column="estado" javaType="es.fpdual.eadmin.eadmin.modelo.EstadoDocumento" />
 		</constructor>
 	</resultMap>
+
+	<select id="obtenerSiguienteIdentificador" resultType="int">
+		SELECT ISNULL(MAX(codigo),0) + 1 FROM ELEMENTO
+	</select>
 </mapper>

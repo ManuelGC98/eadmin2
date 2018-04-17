@@ -53,8 +53,8 @@ public abstract class BaseDocumentoMapperTest {
 	@Test
 	public void deberiaConsultarUnDocumento() throws Exception {
 		this.mapper.insertarDocumento(this.documento);
-		final List<Documento> resultado = this.mapper.consultarDocumento(1);
-		assertThat(resultado, hasSize(1));
+		final Documento resultado = this.mapper.consultarDocumento(1);
+		assertSame(resultado.getCodigo(), 1);
 	}
 	
 	@Test
@@ -63,5 +63,18 @@ public abstract class BaseDocumentoMapperTest {
 		this.mapper.insertarDocumento(this.documento2);
 		final List<Documento> resultado = this.mapper.consultarTodosLosDocumento();
 		assertThat(resultado, hasSize(2));
+	}
+	
+	@Test
+	public void deberiaObtener1CuandoNoHayElementosAlCalucularElMaximoCodigo() throws Exception {
+		int resultado = mapper.obtenerSiguienteIdentificador();
+		assertThat(resultado, is(1));
+	}
+	
+	@Test
+	public void deberiaObtener2CuandoHayUnElementoAlCalucularElMaximoCodigo() throws Exception {
+		this.mapper.insertarDocumento(this.documento);
+		int resultado = mapper.obtenerSiguienteIdentificador();
+		assertThat(resultado, is(2));
 	}
 }
